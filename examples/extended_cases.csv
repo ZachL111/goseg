@@ -1,0 +1,7 @@
+name,demand,capacity,latency,risk,weight,score,decision,reason
+baseline,66,85,19,11,6,76,review,storage baseline scenario exercises the review path for bounded failure handling
+pressure,86,73,28,22,11,1,review,storage pressure scenario exercises the review path for bounded failure handling
+surge,104,93,22,15,14,136,review,storage surge scenario exercises the review path for bounded failure handling
+degraded,71,60,34,24,6,-90,review,storage degraded scenario exercises the review path for bounded failure handling
+recovery,88,102,17,10,9,158,review,storage recovery scenario exercises the review path for bounded failure handling
+boundary,71,83,21,14,10,63,review,storage boundary scenario exercises the review path for bounded failure handling
