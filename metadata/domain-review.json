@@ -1,0 +1,73 @@
+{
+  "repo": "goseg",
+  "language": "Go",
+  "category": "Storage",
+  "goal": "Build segmented append-only logs with index rebuild and compaction planning.",
+  "review_model": {
+    "terms": [
+      "WAL pressure",
+      "snapshot width",
+      "compaction risk",
+      "read drift"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "WAL pressure",
+      "signal": 68,
+      "slack": 54,
+      "drag": 32,
+      "confidence": 82,
+      "score": 176,
+      "lane": "ship"
+    },
+    {
+      "name": "stress",
+      "focus": "snapshot width",
+      "signal": 46,
+      "slack": 28,
+      "drag": 32,
+      "confidence": 54,
+      "score": 78,
+      "lane": "hold"
+    },
+    {
+      "name": "edge",
+      "focus": "compaction risk",
+      "signal": 66,
+      "slack": 42,
+      "drag": 22,
+      "confidence": 59,
+      "score": 167,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "read drift",
+      "signal": 56,
+      "slack": 27,
+      "drag": 20,
+      "confidence": 48,
+      "score": 127,
+      "lane": "watch"
+    },
+    {
+      "name": "stale",
+      "focus": "WAL pressure",
+      "signal": 88,
+      "slack": 20,
+      "drag": 10,
+      "confidence": 70,
+      "score": 236,
+      "lane": "ship"
+    }
+  ]
+}

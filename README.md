@@ -1,69 +1,40 @@
 # goseg
 
-`goseg` is a focused Go codebase around build segmented append-only logs with index rebuild and compaction planning. It is meant to be easy to inspect, run, and extend without a hosted service.
+`goseg` explores storage with a small Go codebase and local fixtures. The technical goal is to build segmented append-only logs with index rebuild and compaction planning.
 
-## Goseg Walkthrough
+## Problem It Tries To Make Smaller
 
-I would read the project from the outside in: command, fixture, model, then roadmap. That keeps the storage idea grounded in files that can be checked locally.
+The project exists to keep a narrow engineering decision visible and testable. For this repo, that decision is how WAL pressure and compaction risk should influence a review result.
 
-## How It Is Put Together
+## Goseg Review Notes
 
-The design is intentionally direct: parse or construct a signal, score it, classify it, and verify the expected branch. This makes the repository useful for studying storage behavior without needing a service or database unless the language project itself is SQL. The Go layout uses small packages and table-oriented tests so the behavior stays easy to follow.
+The first comparison I would make is `WAL pressure` against `snapshot width` because it shows where the rule is most opinionated.
 
-## Reason For The Project
+## Working Pieces
 
-This project keeps the domain idea close to the tests. That makes it useful as a reference implementation, a small experiment, or a starting point for a more specialized tool.
+- `fixtures/domain_review.csv` adds cases for WAL pressure and snapshot width.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/goseg-walkthrough.md` walks through the case spread.
+- The Go code includes a review path for `WAL pressure` and `snapshot width`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Capabilities
+## Design Notes
 
-- Uses fixture data to keep snapshot state changes visible in code review.
-- Includes extended examples for rebuild checks, including `recovery` and `degraded`.
-- Documents compaction plans tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
+The implementation keeps the scoring rule plain: reward signal and confidence, preserve slack, penalize drag, then classify the result into a review lane.
 
-## Data Notes
+The Go code keeps the review rule close to the tests.
 
-The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
-
-## Where Things Live
-
-- `policy`: Go package with the core model
-- `cmd`: small command entry point
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-- `go.mod`: Go module metadata
-
-## Getting It Running
-
-Use a normal shell with Go available on `PATH`. The verifier is written as a PowerShell script because the portfolio was assembled on Windows.
-
-## Command Examples
+## Example Run
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Tests
 
-## Check The Work
+The check exercises the source code and the review fixture. `stale` is the high score at 236; `stress` is the low score at 78.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Known Limits
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Tradeoffs
-
-The repository favors determinism over breadth. It does not pull live data, keep secrets, or depend on network access for verification.
-
-## Possible Extensions
-
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add one more storage fixture that focuses on a malformed or borderline input.
+This remains a local project with deterministic fixtures. It does not depend on credentials, hosted services, or live data. Future work should add richer malformed inputs before widening the public API.
